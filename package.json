@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "A simple parser for GNU style command line options",
   "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
-    "test": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report text"
+    "test": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report lcovonly"
   },
   "repository": {
     "type": "git",
-    "url": "git@git:cli-options.git"
+    "url": "git+https://github.com/retorillo/gnu-option.git"
   },
   "keywords": [
     "cli",
@@ -20,6 +23,10 @@
   ],
   "author": "Retorillo",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/retorillo/gnu-option/issues"
+  },
+  "homepage": "https://github.com/retorillo/gnu-option#readme",
   "devDependencies": {
     "coveralls": "^2.11.9",
     "istanbul": "^0.4.3",
