@@ -1,0 +1,32 @@
+{
+  "name": "gnu-option",
+  "version": "1.0.0",
+  "description": "A simple parser for GNU style command line options",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha --report text"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git:cli-options.git"
+  },
+  "keywords": [
+    "cli",
+    "options",
+    "arguments",
+    "args",
+    "argv",
+    "commandline"
+  ],
+  "author": "Retorillo",
+  "license": "MIT",
+  "devDependencies": {
+    "coveralls": "^2.11.9",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.5.3",
+    "should": "^9.0.2"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
