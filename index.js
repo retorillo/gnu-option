@@ -78,8 +78,17 @@ function parseValue(value, type, origin) {
       return i;
     case 'switch':
       throw new InvalidValueError(origin, type, value);
-    default:
+    default: {
+      if (typeof(type) === 'function') {
+        try {
+          return type.apply(origin, [value]);
+        }
+        catch (e) {
+          throw new InvalidValueError(origin, type, value, e);
+        }
+      }
       throw new UndefinedTypeError(origin, type);
+    }
   }
 }
 function solve(optmap, name){
@@ -116,9 +125,10 @@ function* gnuargs(args){
       yield a;
   }
 }
-function InvalidValueError(option, type, value) {
-  this.name = 'InvalidValueError'
-  this.message = `"${value}" is invalid value for "${option}" that expect ${type}`;
+function InvalidValueError(option, type, value, error) {
+  this.name = 'InvalidValueError';
+  this.message = `"${value}" is invalid for "${option}" (${type})`;
+  this.innerError = error;
   this.option = option;
   this.type = type;
   this.value = value;

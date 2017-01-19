@@ -76,7 +76,7 @@ var optmap = {
 If reference is looped, [CircularReferenceError](#circularreferenceerror) will
 be thrown to prevent infinite loop.
 
-## Type definition
+## Built-in Types
 
 Avaiable built-in types are the followings:
 
@@ -86,12 +86,32 @@ Avaiable built-in types are the followings:
 - `switch`: `switch` typed option never have its value. Similar to `-f` option
   of `rm` command.
 
+## Custom Type
+
+By specifying parser-function instead of type name, can declare the custom typed
+option.
+
+```javascript
+function parseInterval(val) {
+  var m =/^([0-9]+)([mh])$/i.exec(val);
+  if (!m) // Thrown error is set to InvalidValueError.innerError
+    throw new Error("interval type is expected");
+  return {
+    value: parseInt(m[1]);
+    unit: m[2],
+  }
+}
+var optmap = {
+  date = parseInterval,
+}
+```
+
 #### Leading tilde before type name
 
 Leading tilde `~` means that such a option subsequently collect the all thing as
 its value. Similar to `-c` option of `bash`.
 
-```
+```javascript
 gnuopt.parse(['-c', 'curl', '-o', 'foo.bar', 'http://foo.bar/'], {
   c: '~string'
 });
@@ -103,7 +123,7 @@ gnuopt.parse(['-c', 'curl', '-o', 'foo.bar', 'http://foo.bar/'], {
 Leading asterisk `*` means that such a option can be present multiple times.
 By default, throws `InvalidRepetationError` when same named option are present.
 
-```
+```javascript
 gnuopt.parse(['-d', 'dup1', '-d', 'dup2'], { d: '*string' });
 // { d: ['dup1', 'dup2'] }
 ```
@@ -130,6 +150,7 @@ Thrown when value is not valid type.
 - `option`: related option name excluding leading dashes
 - `value`: actual invalid value of option
 - `type`: expected type of option
+- `innerError`: error thrown on custom parser function.
 
 ### InvalidRepetationError
 

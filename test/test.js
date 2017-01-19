@@ -3,6 +3,13 @@
 var should = require('should');
 var gnuopt = require('../');
 
+function parseInterval(value) {
+  var m = /^([0-9]+)([hm])$/i.exec(value);
+  if (!m)
+    throw new Error(`${value} is invalid`);
+  return [parseInt(m[1]), m[2]]
+}
+
 var sources = {
   "parse()": [
     {
@@ -10,7 +17,7 @@ var sources = {
       method: gnuopt.parse,
       input: [
         [ 'able', 'baker', '-abc', 'charlie' ],
-        { a: 'switch', b: 'switch', c: 'string' } 
+        { a: 'switch', b: 'switch', c: 'string' }
       ],
       expected: { $:['able', 'baker'], a: 1, b: 1, c: 'charlie', }
     },
@@ -18,7 +25,7 @@ var sources = {
       it: 'Parse string options',
       input: [
         [ '-a', 'able', '-b', 'baker', '-c', 'charlie' ],
-        { a: 'string', b: 'string', c: 'string' } 
+        { a: 'string', b: 'string', c: 'string' }
       ],
       expected: { $:[],  a: 'able', b: 'baker', c: 'charlie', }
     },
@@ -34,9 +41,17 @@ var sources = {
       it: 'Parse number options',
       input: [
         [ '-a', '1.23', '-b', '4' ],
-        { a: 'number', b: 'integer',  } 
+        { a: 'number', b: 'integer',  }
       ],
       expected: { $:[],  a: 1.23, b: 4, }
+    },
+    {
+      it: "Parse custom type",
+      input: [
+        [ "--interval", "30m" ],
+        { interval: parseInterval }
+      ],
+      expected: { $: [], interval: [ 30 , 'm' ] }
     },
     {
       it: 'Parse GNU long options without equal sign',
@@ -58,7 +73,7 @@ var sources = {
       it: 'Parse bash -c like switch (~string)',
       input: [
         [ '-a', 'able', '-c', 'baker', '--charie' ],
-        { a: 'string', c: '~string' } 
+        { a: 'string', c: '~string' }
       ],
       expected: { $:[], a: 'able', c: ['baker', '--charie'], }
     },
@@ -66,7 +81,7 @@ var sources = {
       it: 'Parse bash -c like switch (~integer)',
       input: [
         [ '-a', 'able', '-c', '1', '2' ],
-        { a: 'string', c: '~integer' } 
+        { a: 'string', c: '~integer' }
       ],
       expected: { $:[], a: 'able', c: [1, 2], }
     },
@@ -74,14 +89,14 @@ var sources = {
       it: 'Parse options with optmap wildcard',
       input: [
         [ 'able', 'baker', '-abc', '1', '-d', '2' ],
-        { a: 'switch', b: 'switch', '-': 'number' } 
+        { a: 'switch', b: 'switch', '-': 'number' }
       ],
       expected: { $:['able', 'baker'], a: 1, b: 1, c: 1, d: 2 }
     },
     {
       it: 'Parse by automatically using process.argv',
       input: [
-        { } 
+        { }
       ],
       expected: { $:[] }
     },
@@ -95,13 +110,13 @@ var sources = {
     },
     {
       it: 'Throw InvalidValueError when value is no specified (middle of arguments)',
-      method: (args, opt) => { 
+      method: (args, opt) => {
         try {
           gnuopt.parse(args, opt)
           return 'SUCCESS'
         }
         catch (e) {
-          return [e.name, e.option, e.type, e.value, e.route];   
+          return [e.name, e.option, e.type, e.value, e.route];
         }
       },
       input: [
@@ -149,6 +164,14 @@ var sources = {
         { s: '~switch' }
       ],
       expected: [ 'InvalidValueError', 's', 'switch', 'use', undefined ],
+    },
+    {
+      it: 'Throw InvalidValueError with custom type',
+      input: [
+        [ '--interval', '30k'  ],
+        { interval: parseInterval },
+      ],
+      expected: [ 'InvalidValueError', 'interval', parseInterval, '30k', undefined ],
     },
     {
       it: 'Throw UndefinedTypeError when type is undefined',
