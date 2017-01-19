@@ -1,6 +1,3 @@
-// Distributed under the MIT license
-// Copyright (C) 2016 Retorillo
-
 module.exports = {
   parse: parse,
   InvalidValueError: InvalidValueError,
@@ -8,6 +5,7 @@ module.exports = {
   UndefinedTypeError: UndefinedTypeError,
   CircularReferenceError: CircularReferenceError
 }
+
 function parse() {
   var args, optmap;
   if (arguments.length == 1 && typeof(arguments[0]) === 'object') {
@@ -29,9 +27,22 @@ function parse() {
     else if (/^-/.test(a)) {
       if (last && last.value === undefined)
         throw new InvalidValueError(last.origin, last.type, undefined);
-      var names = /^--/.test(a) ? [ a.substr(2) ] : a.substr(1).split(/(?=)/);
-      for (var name of names) {
-        last = solve(optmap, name);
+      var posix = !/^--/.test(a);
+      var names = !posix ? [ a.substr(2) ] : a.substr(1).split(/(?=)/);
+      while (names.length > 0) {
+        var name = names.splice(0, 1)[0];
+        try {
+          last = solve(optmap, name);
+        }
+        catch (e) {
+          if (posix && last && e instanceof UndefinedTypeError) {
+            var posixv = parseValue(name + names.join(''), last.type, last.origin);
+            last.value = opt[last.name] = posixv;
+            break;
+          }
+          else
+            throw e;
+        }
         if (last.name in opt) {
           if (!last.sign)
             throw new InvalidRepetationError(last.origin, last.type);

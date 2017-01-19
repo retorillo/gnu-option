@@ -101,6 +101,14 @@ var sources = {
       expected: { $:[] }
     },
     {
+      it: 'Parse POSIX options with value',
+      input: [
+        [ '-abc350', '-d250' ],
+        { a: 'switch', b: 'string', d: 'integer', }
+      ],
+      expected: { $:[], a: 1, b: 'c350', d: 250 }
+    },
+    {
       it: 'Parse options by switch* (must be number of occurence)',
       input: [
         [ '-cccddd', 'filename1', '--able', '-dda', 'filename2' ],

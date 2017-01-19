@@ -197,12 +197,6 @@ switch (process.argv[3]) {
 gnuopt.parse(process.argv.splice(3), optmap);
 ```
 
-## Known Issue
-
-Cannot correctly parse when including POSIX option that immediately followed by
-its value like `-A5`. In this case, both `A` and `5` will be treated as option
-name. I will fix this issue in the future release.
-
 ## License
 
 Distributed under the MIT license
