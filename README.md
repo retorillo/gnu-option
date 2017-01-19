@@ -86,25 +86,6 @@ Avaiable built-in types are the followings:
 - `switch`: `switch` typed option never have its value. Similar to `-f` option
   of `rm` command.
 
-## Custom Type
-
-By specifying parser-function instead of type name, can declare the custom typed
-option.
-
-```javascript
-function parseInterval(val) {
-  var m =/^([0-9]+)([mh])$/i.exec(val);
-  if (!m) // Thrown error is set to InvalidValueError.innerError
-    throw new Error("interval type is expected");
-  return {
-    value: parseInt(m[1]);
-    unit: m[2],
-  }
-}
-var optmap = {
-  date = parseInterval,
-}
-```
 
 #### Leading tilde before type name
 
@@ -135,6 +116,26 @@ its occurences.
 ```
 gnuopt.parse('-ccccc', { c: '*switch' });
 // { c: 5 }
+```
+
+## Custom Type
+
+By specifying parser-function instead of type name, can declare the custom typed
+option.
+
+```javascript
+function parseInterval(val) {
+  var m =/^([0-9]+)([mh])$/i.exec(val);
+  if (!m) // Thrown error is set to InvalidValueError.innerError
+    throw new Error("interval type is expected");
+  return {
+    value: parseInt(m[1]);
+    unit: m[2],
+  }
+}
+var optmap = {
+  wait: parseInterval,
+}
 ```
 
 ## Errors
